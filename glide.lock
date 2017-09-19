@@ -1,8 +1,8 @@
-hash: c5eb009a3f713fb6085f7ae4323820fad724491eebb37818fd44f91f724d70f0
-updated: 2017-09-19T15:11:36.30734585+02:00
+hash: 20da6303b414da7f480040821cc17d7d26b661aac7e33a38e9267456a37352c8
+updated: 2017-09-19T19:41:22.164180483+02:00
 imports:
 - name: github.com/blevesearch/bleve
-  version: 6eea5b78da004393b1d06b8c88d1bed9ca0a94b2
+  version: 174f8ed44a0bf65e7c8fb228b60b58de62654cd2
   subpackages:
   - analysis
   - analysis/analyzer/custom
@@ -10,9 +10,12 @@ imports:
   - analysis/analyzer/simple
   - analysis/analyzer/standard
   - analysis/analyzer/web
+  - analysis/analyzers/keyword_analyzer
+  - analysis/analyzers/simple_analyzer
   - analysis/char/html
   - analysis/char/regexp
   - analysis/char/zerowidthnonjoiner
+  - analysis/datetime
   - analysis/datetime/flexible
   - analysis/datetime/optional
   - analysis/lang/ar
@@ -34,6 +37,7 @@ imports:
   - analysis/lang/in
   - analysis/lang/it
   - analysis/lang/pt
+  - analysis/language/en
   - analysis/token/apostrophe
   - analysis/token/compound
   - analysis/token/edgengram
@@ -47,6 +51,7 @@ imports:
   - analysis/token/stop
   - analysis/token/truncate
   - analysis/token/unicodenorm
+  - analysis/tokenizer
   - analysis/tokenizer/character
   - analysis/tokenizer/exception
   - analysis/tokenizer/letter
@@ -85,6 +90,7 @@ imports:
 - name: github.com/blevesearch/blevex
   version: dfb1a3c92252ad0b5f36b78a0e750ec25d1b67c4
   subpackages:
+  - batcher
   - cznicb
   - detectlang
   - icu
@@ -106,6 +112,7 @@ imports:
   - lang/th
   - lang/tr
   - leveldb
+  - preload
   - rocksdb
   - stemmer
 - name: github.com/blevesearch/cld2
@@ -121,8 +128,10 @@ imports:
   repo: https://github.com/boltdb/bolt
 - name: github.com/buger/jsonparser
   version: fda8192cc4f100afbdbbcce82284a5b711969174
+- name: github.com/BurntSushi/toml
+  version: a368813c5e648fee92e5f6c30e3944ff9d5e8895
 - name: github.com/coreos/etcd
-  version: 5bb9f9591f01d0a3c61d2eb3a3bb281726005b2b
+  version: 1408b337b67d4cb8355b3666b7eb8aaefbbfc167
   subpackages:
   - auth/authpb
   - clientv3
@@ -130,19 +139,33 @@ imports:
   - etcdserver/api/v3rpc/rpctypes
   - etcdserver/etcdserverpb
   - mvcc/mvccpb
+- name: github.com/coreos/go-etcd
+  version: 003851be7bb0694fe3cc457a49529a19388ee7cf
+  subpackages:
+  - etcd
 - name: github.com/couchbase/ghistogram
   version: d910dd063dd68fb4d2a1ba344440f834ebb4ef62
 - name: github.com/couchbase/moss
   version: fc637b3f82ec5b8139b0d295f6588c6a2bea5a16
-  repo: https://github.com/couchbase/moss
+  subpackages:
+  - graph
 - name: github.com/cznic/b
   version: 6955404bf550e1eae1bf83121739078b027f4547
 - name: github.com/edsrzf/mmap-go
   version: 0bce6a6887123b67a60366d2c9fe2dfb74289d2e
 - name: github.com/fsnotify/fsnotify
   version: 4da3e2cfbabc9f751898f250b49f2439785783a1
+- name: github.com/gogo/protobuf
+  version: dda3e8acadcc9affc16faf33fbb229db78399245
+  subpackages:
+  - proto
+  - sortkeys
+  - types
+- name: github.com/golang/glog
+  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/golang/protobuf
-  version: ae59567b9aab61b50b2590679a62c3c044030b61
+  version: 6a1fa9404c0aebf36c879bc50152edcc953910d2
+  repo: https://github.com/golang/protobuf.git
   vcs: git
   subpackages:
   - descriptor
@@ -157,20 +180,25 @@ imports:
   - ptypes/timestamp
   - ptypes/wrappers
 - name: github.com/golang/snappy
-  version: cef980a12b316c5b7e5bb3a8e168eb43ae999a88
-  repo: https://github.com/golang/snappy
+  version: 553a641470496b2327abcac10b36396bd98e45c9
+- name: github.com/google/btree
+  version: 316fb6d3f031ae8f4d457c6c5186b9e3ded70435
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: 24fca303ac6da784b9e8269f724ddeb0b2eea5e7
+- name: github.com/grpc-ecosystem/go-grpc-prometheus
+  version: 0c1b191dbfe51efdabe3c14b9f6f3b96429e0722
 - name: github.com/grpc-ecosystem/grpc-gateway
-  version: 8bec008bd140852468324fdd069ed8e38d37a963
+  version: a5c7982c02e20b0d22f1f50ff20fbb85aa30433a
   subpackages:
   - runtime
   - third_party/googleapis/google/api
   - utilities
+- name: github.com/grpc/grpc-go
+  version: 3c33c26290b747350f8650c7d38bcc51b42dc785
 - name: github.com/hashicorp/hcl
-  version: 68e816d1c783414e79bc65b3994d9ab6b0a722ab
+  version: 392dba7d905ed5d04a5794ba89f558b27e2ba1ca
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -192,6 +220,8 @@ imports:
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jmhodges/levigo
   version: c42d9e0ca023e2198120196f842701bb4c55d7b9
+- name: github.com/kr/fs
+  version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 - name: github.com/magiconair/properties
   version: 8d7837e64d3c1ee4e54a880c5a920ab4316fc90a
 - name: github.com/mitchellh/mapstructure
@@ -253,43 +283,45 @@ imports:
   version: b9cb0d30eca790f5bcf524dd3beb715d6c8d1923
 - name: github.com/willf/bitset
   version: 2e6e8094ef4745224150c88c16191c7dceaad16f
-  repo: https://github.com/willf/bitset
 - name: golang.org/x/crypto
-  version: 7d9177d70076375b9a59c8fde23d52d9c4a7ecd5
+  version: dd96d35c1b251a7ef77f057fc5c4f92ea2b285b4
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
-  version: e45385e9b226f570b1f086bf287b25d3d4117776
+  version: ab5485076ff3407ad2d02db054635913f017b0ed
   subpackages:
   - context
+  - html
+  - html/atom
   - http2
   - http2/hpack
+  - idna
   - internal/timeseries
+  - lex/httplex
   - trace
+  - webdav
 - name: golang.org/x/sys
-  version: e48874b42435b4347fc52bdee0424a52abc974d7
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
   subpackages:
   - unix
-  - windows
 - name: golang.org/x/text
-  version: 5ee49cfe751141f8017047bab800d1f528ee3be1
-  repo: https://go.googlesource.com/text
+  version: 3491b61b9edc56653ad4333e605e2908e46a036b
   subpackages:
+  - secure/bidirule
   - transform
+  - unicode/bidi
   - unicode/norm
 - name: google.golang.org/genproto
-  version: 09f6ed296fc66555a25fe4ce95173148778dfa85
+  version: 1e559d0a00eef8a9a43151db4665280bd8dd5886
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: b3a44ab17b608fdae6ad11d44e3ce3c9084a2c0e
+  version: 3c33c26290b747350f8650c7d38bcc51b42dc785
   subpackages:
   - codes
-  - connectivity
   - credentials
   - grpclb/grpc_lb_v1
   - grpclog
-  - health/grpc_health_v1
   - internal
   - keepalive
   - metadata

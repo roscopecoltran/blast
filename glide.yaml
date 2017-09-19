@@ -1,12 +1,48 @@
 package: github.com/roscopecoltran/blast
 import:
-- package: github.com/blevesearch/bleve
+- package: github.com/golang/glog
+- package: golang.org/x/text
+  version: 3491b61b9edc56653ad4333e605e2908e46a036b
   subpackages:
+  - secure/bidirule
+- package: github.com/BurntSushi/toml
+  version: a368813c5e648fee92e5f6c30e3944ff9d5e8895
+- package: github.com/grpc-ecosystem/go-grpc-prometheus
+  version: 0c1b191dbfe51efdabe3c14b9f6f3b96429e0722
+- package: github.com/blevesearch/bleve
+  version: 174f8ed44a0bf65e7c8fb228b60b58de62654cd2
+  subpackages:
+  - analysis/analyzers/keyword_analyzer
+  - analysis/analyzers/simple_analyzer
+  - analysis/language/en
+  - analysis/token/unicodenorm
+  - analysis/token/lowercase
+  - analysis/tokenizer
+  - analysis/datetime
+  - analysis/tokenmap
   - config
   - document
   - mapping
-- package: github.com/blevesearch/blevex
+- package: golang.org/x/net
+  version: release-branch.go1.9
   subpackages:
+  - context
+  - html
+  - html/atom
+  - webdav
+  - http2
+  - http2/hpack
+- package: github.com/blevesearch/blevex
+  version: dfb1a3c92252ad0b5f36b78a0e750ec25d1b67c4
+  subpackages:
+  - batcher
+  - cznicb
+  - detectlang
+  - icu
+  - leveldb
+  - preload
+  - rocksdb
+  - stemmer
   - lang/da
   - lang/de
   - lang/en
@@ -25,13 +61,29 @@ import:
   - lang/th
   - lang/tr
 - package: github.com/buger/jsonparser
+- package: github.com/coreos/go-etcd
+  version: 003851be7bb0694fe3cc457a49529a19388ee7cf
+  subpackages:
+  - etcd
 - package: github.com/coreos/etcd
+  version: 1408b337b67d4cb8355b3666b7eb8aaefbbfc167
   subpackages:
   - clientv3
   - clientv3/clientv3util
+- package: github.com/gogo/protobuf
+  version: dda3e8acadcc9affc16faf33fbb229db78399245
+  subpackages:
+  - proto
+  - sortkeys
+  - types
+- package: github.com/golang/snappy
+  version: 553a641470496b2327abcac10b36396bd98e45c9
+- package: github.com/google/btree
+  version: 316fb6d3f031ae8f4d457c6c5186b9e3ded70435
 - package: github.com/golang/protobuf
-  version: master
+  version: 6a1fa9404c0aebf36c879bc50152edcc953910d2
   vcs: git
+  repo: https://github.com/golang/protobuf.git
   subpackages:
   - proto
   - protoc-gen-go/descriptor
@@ -44,6 +96,11 @@ import:
   - descriptor
   - jsonpb
   - proto
+- package: github.com/buger/jsonparser
+- package: github.com/couchbase/moss
+  subpackages:
+  - graph
+- package: github.com/willf/bitset
 - package: github.com/gorilla/mux
 - package: github.com/pkg/errors
 - package: github.com/sirupsen/logrus
@@ -53,17 +110,20 @@ import:
   subpackages:
   - client
   - gen/proto
-- package: golang.org/x/net
-  subpackages:
-  - context
 - package: google.golang.org/grpc
-  version: v1.5.x # v1.6.x
+  version: 3c33c26290b747350f8650c7d38bcc51b42dc785
   subpackages:
   - codes
   - grpclog
   - status
+- package: github.com/grpc/grpc-go
+  version: 3c33c26290b747350f8650c7d38bcc51b42dc785
+- package: github.com/hashicorp/hcl
+  version: 392dba7d905ed5d04a5794ba89f558b27e2ba1ca
+- package: github.com/kr/fs
+  version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 - package: github.com/grpc-ecosystem/grpc-gateway
-  version: master
+  version: a5c7982c02e20b0d22f1f50ff20fbb85aa30433a
   subpackages:
   - runtime
   - utilities
