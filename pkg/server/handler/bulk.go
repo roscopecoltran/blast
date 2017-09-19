@@ -17,30 +17,89 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/mosuka/blast/client"
+	"github.com/buger/jsonparser"
+	"github.com/roscopecoltran/blast/pkg/client"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-type DeleteDocumentHandler struct {
+type BulkHandler struct {
 	client *client.BlastClient
 }
 
-func NewDeleteDocumentHandler(c *client.BlastClient) *DeleteDocumentHandler {
-	return &DeleteDocumentHandler{
+func NewBulkHandler(c *client.BlastClient) *BulkHandler {
+	return &BulkHandler{
 		client: c,
 	}
 }
 
-func (h *DeleteDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h *BulkHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{
 		"req": req,
 	}).Info("")
 
-	vars := mux.Vars(req)
+	// read request
+	data, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to read request body")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// get batch_size
+	batchSize, err := jsonparser.GetInt(data, "batch_size")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to get batch size")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// get requests
+	requestsBytes, _, _, err := jsonparser.Get(data, "requests")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to get update requests")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var requests []map[string]interface{}
+	err = json.Unmarshal(requestsBytes, &requests)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to create update requests")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// overwrite request
+	if req.URL.Query().Get("batchSize") != "" {
+		i, err := strconv.Atoi(req.URL.Query().Get("batchSize"))
+		if err != nil {
+			log.WithFields(log.Fields{
+				"err": err,
+			}).Error("failed to set batch size")
+
+			Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		batchSize = int64(i)
+	}
+	if batchSize <= 0 {
+		batchSize = int64(DefaultBatchSize)
+	}
 
 	// request timeout
 	requestTimeout := DefaultRequestTimeout
@@ -61,12 +120,12 @@ func (h *DeleteDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(requestTimeout)*time.Millisecond)
 	defer cancel()
 
-	// request
-	resp, err := h.client.Index.DeleteDocument(ctx, vars["id"])
+	// update documents to index in bulk
+	resp, err := h.client.Index.Bulk(ctx, requests, int32(batchSize))
 	if err != nil {
 		log.WithFields(log.Fields{
-			"req": req,
-		}).Error("failed to delete document")
+			"err": err,
+		}).Error("failed to index documents in bulk")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)
 		return

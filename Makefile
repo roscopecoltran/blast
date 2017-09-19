@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-VERSION = 0.1.0
+VERSION = 0.1.1
 
-LDFLAGS = -ldflags "-X \"github.com/mosuka/blast/version.Version=${VERSION}\""
+LDFLAGS = -ldflags "-X \"github.com/roscopecoltran/blast/version.Version=${VERSION}\""
 
 GO := GO15VENDOREXPERIMENT=1 go
 PACKAGES = $(shell $(GO) list ./... | grep -v '/vendor/')
@@ -22,6 +22,26 @@ PROTOBUFS = $(shell find . -name '*.proto' | sort --unique | grep -v /vendor/)
 TARGET_PACKAGES = $(shell find . -name 'main.go' -print0 | xargs -0 -n1 dirname | sort --unique | grep -v /vendor/)
 BUILD_TAGS = "-tags=''"
 #BUILD_TAGS = "-tags=lang"
+
+# determine platform
+ifeq (Darwin, $(findstring Darwin, $(shell uname -a)))
+  PLATFORM 			:= macosx
+  GO_BUILD_OS 		:= darwin
+else
+  PLATFORM 			:= Linux
+  GO_BUILD_OS 		:= linux
+endif
+
+gox: $(GO_BUILD_OS)
+
+dist:
+	gox -verbose -os="linux darwin" -arch="amd64" -output="dist/{{.OS}/{{.Dir}}_{{.OS}_{{.Arch}" $(glide novendor)
+
+darwin:
+	gox -verbose -os="darwin" -arch="amd64" -output="{{.Dir}}" $(glide novendor)
+
+linux:
+	gox -verbose -os="darwin" -arch="amd64" -output="{{.Dir}}" $(glide novendor)
 
 vendoring:
 	@echo ">> vendoring dependencies"

@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"github.com/blevesearch/bleve"
 	"github.com/buger/jsonparser"
-	"github.com/mosuka/blast/client"
+	"github.com/roscopecoltran/blast/pkg/client"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"

@@ -17,60 +17,30 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"github.com/mosuka/blast/client"
+	"github.com/gorilla/mux"
+	"github.com/roscopecoltran/blast/pkg/client"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-type GetIndexInfoHandler struct {
+type GetDocumentHandler struct {
 	client *client.BlastClient
 }
 
-func NewGetIndexInfoHandler(c *client.BlastClient) *GetIndexInfoHandler {
-	return &GetIndexInfoHandler{
+func NewGetDocumentHandler(c *client.BlastClient) *GetDocumentHandler {
+	return &GetDocumentHandler{
 		client: c,
 	}
 }
 
-func (h *GetIndexInfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h *GetDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{
 		"req": req,
 	}).Info("")
 
-	var indexPath bool
-	if req.URL.Query().Get("indexMapping") == "true" {
-		indexPath = true
-	}
-
-	var indexMapping bool
-	if req.URL.Query().Get("indexMapping") == "true" {
-		indexMapping = true
-	}
-
-	var indexType bool
-	if req.URL.Query().Get("indexType") == "true" {
-		indexType = true
-	}
-
-	var kvstore bool
-	if req.URL.Query().Get("kvstore") == "true" {
-		kvstore = true
-	}
-
-	var kvconfig bool
-	if req.URL.Query().Get("kvconfig") == "true" {
-		kvconfig = true
-	}
-
-	if !indexPath && !indexMapping && !indexType && !kvstore && !kvconfig {
-		indexPath = true
-		indexMapping = true
-		indexType = true
-		kvstore = true
-		kvconfig = true
-	}
+	vars := mux.Vars(req)
 
 	// request timeout
 	requestTimeout := DefaultRequestTimeout
@@ -92,17 +62,17 @@ func (h *GetIndexInfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	defer cancel()
 
 	// request
-	resp, err := h.client.Index.GetIndexInfo(ctx, indexPath, indexMapping, indexType, kvstore, kvconfig)
+	resp, err := h.client.Index.GetDocument(ctx, vars["id"])
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("failed to get index")
+			"req": req,
+		}).Error("failed to get document")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
 
-	// output response
+	// request
 	output, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		log.WithFields(log.Fields{

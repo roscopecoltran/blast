@@ -12,23 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package service
+package server
 
 import (
-	"github.com/mosuka/blast/util"
+	"github.com/roscopecoltran/blast/pkg/util"
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 )
 
-func TestBlastGRPCService(t *testing.T) {
+func TestBlastServer(t *testing.T) {
 	dir, _ := os.Getwd()
 
-	path, _ := ioutil.TempDir("/tmp", "indigo")
+	port := 0
+	indexPath, _ := ioutil.TempDir("/tmp", "blast")
+	indexPath = indexPath + "/index/data"
 	indexMappingPath := dir + "/../etc/index_mapping.json"
 	indexType := "upside_down"
 	kvstore := "boltdb"
 	kvconfigPath := dir + "/../etc/kvconfig.json"
+	etcdEndpoints := []string{}
+	etcdDialTimeout := 5000
+	etcdRequestTimeout := 5000
+	cluster := ""
 
 	indexMappingFile, err := os.Open(indexMappingPath)
 	if err != nil {
@@ -38,7 +45,7 @@ func TestBlastGRPCService(t *testing.T) {
 
 	indexMapping, err := util.NewIndexMapping(indexMappingFile)
 	if err != nil {
-		t.Errorf("could not load IndexMapping : %v", err)
+		t.Errorf("could not load IndexMapping: %v", err)
 	}
 
 	kvconfigFile, err := os.Open(kvconfigPath)
@@ -49,16 +56,27 @@ func TestBlastGRPCService(t *testing.T) {
 
 	kvconfig, err := util.NewKvconfig(kvconfigFile)
 	if err != nil {
-		t.Errorf("could not load kvconfig : %v", err)
-	}
-	kvconfig["path"] = path + "/store"
-
-	s := NewBlastService(path, indexMapping, indexType, kvstore, kvconfig)
-	if s == nil {
-		t.Fatalf("unexpected error.  expected not nil, actual %v", s)
+		t.Errorf("could not load kvconfig %v", err)
 	}
 
-	if s.IndexPath != path {
-		t.Errorf("unexpected error.  expected %v, actual %v", path, s.IndexPath)
+	blastServer, err := NewBlastServer(port, indexPath, indexMapping, indexType, kvstore, kvconfig, etcdEndpoints, etcdDialTimeout, etcdRequestTimeout, cluster)
+
+	if blastServer == nil {
+		t.Fatalf("unexpected error. expected not nil, actual %v", blastServer)
 	}
+
+	err = blastServer.Start()
+
+	if err != nil {
+		t.Fatalf("unexpected error. %v", err)
+	}
+
+	time.Sleep(10 * time.Second)
+
+	err = blastServer.Stop()
+	if err != nil {
+		t.Fatalf("unexpected error. %v", err)
+	}
+
+	os.RemoveAll(indexPath)
 }

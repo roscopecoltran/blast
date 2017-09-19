@@ -15,7 +15,7 @@
 package main
 
 import (
-	"github.com/mosuka/blast/cmd/blast/cmd"
+	"github.com/roscopecoltran/blast/cmd/blast/cmd"
 	"os"
 )
 

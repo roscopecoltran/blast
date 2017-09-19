@@ -18,7 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mosuka/blast/cluster"
+	"github.com/roscopecoltran/blast/pkg/cluster"
 	"github.com/spf13/cobra"
 	"time"
 )

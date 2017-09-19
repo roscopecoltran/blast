@@ -17,78 +17,60 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"github.com/buger/jsonparser"
-	"github.com/gorilla/mux"
-	"github.com/mosuka/blast/client"
+	"github.com/roscopecoltran/blast/pkg/client"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-type PutDocumentHandler struct {
+type GetIndexInfoHandler struct {
 	client *client.BlastClient
 }
 
-func NewPutDocumentHandler(c *client.BlastClient) *PutDocumentHandler {
-	return &PutDocumentHandler{
+func NewGetIndexInfoHandler(c *client.BlastClient) *GetIndexInfoHandler {
+	return &GetIndexInfoHandler{
 		client: c,
 	}
 }
 
-func (h *PutDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h *GetIndexInfoHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{
 		"req": req,
 	}).Info("")
 
-	vars := mux.Vars(req)
-
-	// read request
-	data, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("failed to read request body")
-
-		Error(w, err.Error(), http.StatusBadRequest)
-		return
+	var indexPath bool
+	if req.URL.Query().Get("indexMapping") == "true" {
+		indexPath = true
 	}
 
-	// get id
-	id, err := jsonparser.GetString(data, "document", "id")
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("failed to get id")
-
-		Error(w, err.Error(), http.StatusBadRequest)
-		return
+	var indexMapping bool
+	if req.URL.Query().Get("indexMapping") == "true" {
+		indexMapping = true
 	}
 
-	// get fields
-	fieldsBytes, _, _, err := jsonparser.Get(data, "document", "fields")
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("failed to get fields")
-
-		Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	var fields map[string]interface{}
-	err = json.Unmarshal(fieldsBytes, &fields)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"err": err,
-		}).Error("failed to create fields")
-
-		Error(w, err.Error(), http.StatusBadRequest)
-		return
+	var indexType bool
+	if req.URL.Query().Get("indexType") == "true" {
+		indexType = true
 	}
 
-	// overwrite request
-	id = vars["id"]
+	var kvstore bool
+	if req.URL.Query().Get("kvstore") == "true" {
+		kvstore = true
+	}
+
+	var kvconfig bool
+	if req.URL.Query().Get("kvconfig") == "true" {
+		kvconfig = true
+	}
+
+	if !indexPath && !indexMapping && !indexType && !kvstore && !kvconfig {
+		indexPath = true
+		indexMapping = true
+		indexType = true
+		kvstore = true
+		kvconfig = true
+	}
 
 	// request timeout
 	requestTimeout := DefaultRequestTimeout
@@ -110,11 +92,11 @@ func (h *PutDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	defer cancel()
 
 	// request
-	resp, err := h.client.Index.PutDocument(ctx, id, fields)
+	resp, err := h.client.Index.GetIndexInfo(ctx, indexPath, indexMapping, indexType, kvstore, kvconfig)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"req": req,
-		}).Error("failed to put document")
+			"err": err,
+		}).Error("failed to get index")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
@@ -124,7 +106,7 @@ func (h *PutDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	output, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		log.WithFields(log.Fields{
-			"req": req,
+			"err": err,
 		}).Error("failed to create response")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)

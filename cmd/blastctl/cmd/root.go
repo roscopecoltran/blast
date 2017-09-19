@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-	ver "github.com/mosuka/blast/version"
+	ver "github.com/roscopecoltran/blast/pkg/version"
 	"github.com/spf13/cobra"
 	"os"
 )

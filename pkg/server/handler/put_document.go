@@ -17,30 +17,78 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"github.com/buger/jsonparser"
 	"github.com/gorilla/mux"
-	"github.com/mosuka/blast/client"
+	"github.com/roscopecoltran/blast/pkg/client"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-type GetDocumentHandler struct {
+type PutDocumentHandler struct {
 	client *client.BlastClient
 }
 
-func NewGetDocumentHandler(c *client.BlastClient) *GetDocumentHandler {
-	return &GetDocumentHandler{
+func NewPutDocumentHandler(c *client.BlastClient) *PutDocumentHandler {
+	return &PutDocumentHandler{
 		client: c,
 	}
 }
 
-func (h *GetDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (h *PutDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	log.WithFields(log.Fields{
 		"req": req,
 	}).Info("")
 
 	vars := mux.Vars(req)
+
+	// read request
+	data, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to read request body")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// get id
+	id, err := jsonparser.GetString(data, "document", "id")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to get id")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// get fields
+	fieldsBytes, _, _, err := jsonparser.Get(data, "document", "fields")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to get fields")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var fields map[string]interface{}
+	err = json.Unmarshal(fieldsBytes, &fields)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"err": err,
+		}).Error("failed to create fields")
+
+		Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// overwrite request
+	id = vars["id"]
 
 	// request timeout
 	requestTimeout := DefaultRequestTimeout
@@ -62,21 +110,21 @@ func (h *GetDocumentHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	defer cancel()
 
 	// request
-	resp, err := h.client.Index.GetDocument(ctx, vars["id"])
+	resp, err := h.client.Index.PutDocument(ctx, id, fields)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"req": req,
-		}).Error("failed to get document")
+		}).Error("failed to put document")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
 
-	// request
+	// output response
 	output, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		log.WithFields(log.Fields{
-			"err": err,
+			"req": req,
 		}).Error("failed to create response")
 
 		Error(w, err.Error(), http.StatusServiceUnavailable)

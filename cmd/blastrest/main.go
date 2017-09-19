@@ -15,7 +15,7 @@
 package main
 
 import (
-	"github.com/mosuka/blast/cmd/blastrest/cmd"
+	"github.com/roscopecoltran/blast/cmd/blastrest/cmd"
 	"os"
 )
 

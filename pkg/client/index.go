@@ -17,7 +17,7 @@ package client
 import (
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
-	"github.com/mosuka/blast/proto"
+	"github.com/roscopecoltran/blast/gen/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

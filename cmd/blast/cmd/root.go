@@ -17,9 +17,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/blevesearch/bleve/mapping"
-	"github.com/mosuka/blast/server"
-	"github.com/mosuka/blast/util"
-	"github.com/mosuka/blast/version"
+	"github.com/roscopecoltran/blast/pkg/server"
+	"github.com/roscopecoltran/blast/pkg/util"
+	"github.com/roscopecoltran/blast/pkg/version"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

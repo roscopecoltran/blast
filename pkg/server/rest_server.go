@@ -17,8 +17,8 @@ package server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/mosuka/blast/client"
-	"github.com/mosuka/blast/server/handler"
+	"github.com/roscopecoltran/blast/pkg/client"
+	"github.com/roscopecoltran/blast/pkg/server/handler"
 	log "github.com/sirupsen/logrus"
 	"net"
 	"net/http"

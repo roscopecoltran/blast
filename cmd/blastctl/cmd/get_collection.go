@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/blevesearch/bleve/mapping"
-	"github.com/mosuka/blast/cluster"
+	"github.com/roscopecoltran/blast/pkg/cluster"
 	"github.com/spf13/cobra"
 	"time"
 )
