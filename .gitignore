@@ -25,3 +25,7 @@ bin
 data
 vendor/*
 !/vendor/manifest
+
+vendor
+vendor/
+vendor/**
